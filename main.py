@@ -1,4 +1,3 @@
-# from tkinter import
 from tkinter import *
 from tkinter import ttk
 import time
@@ -17,6 +16,9 @@ INPUT_HEIGHT = 10
 
 
 # Window size tracker
+# ---[[[[[AUTO-ADJUST TO BE IMPLEMENTED]]]]]---
+
+# Display text retrieval
 def retrieve_random_text():
     #  can replace with a http text request
     text = ("Clashing color palettes can drive consumers away from your website. The best hues to use are pleasing to "

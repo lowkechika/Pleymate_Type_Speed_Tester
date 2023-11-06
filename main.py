@@ -6,8 +6,8 @@ import time
 window = Tk()
 window.title('Pleymate Type Speed')
 window.config(pady=40, padx=40, bg='#313866')
-window.minsize(width=1020, height=720)
-window.maxsize(width=1920, height=1080)
+window.minsize(width=1220, height=720)
+window.maxsize(width=1222, height=720)
 
 # app icon
 window.iconbitmap('icon/pleymate.ico', )
@@ -17,6 +17,8 @@ WIDTH = 100
 DISPLAY_HEIGHT = 10
 INPUT_HEIGHT = 8
 
+
+# ______________ ================================____________
 
 # Display text retrieval
 def retrieve_random_text():
@@ -36,6 +38,15 @@ def retrieve_random_text():
     text_display.insert(0.0, text)
 
 
+# prevent pasting on text input
+def no_pasting(event):
+    return "break"
+
+
+def delete_random_text():
+    text_display.delete(0.0, END)
+
+
 current_words = 0
 
 
@@ -52,7 +63,7 @@ def input_word_count():
     if input_text == "":
         current_words = 0
     word_count.config(text=f"Word Count: {current_words}")
-    window.after(1000, input_word_count)
+    window.after(10, input_word_count)
 
 
 def timer():
@@ -64,6 +75,7 @@ style = ttk.Style()
 style.configure('Rounded.TButton', relief='solid', borderwidth=1, background='#313866')
 style.map('Rounded.TButton', foreground=[('active', '#974EC3')])
 
+# ______________ ================================____________
 # text display
 text_display = Text(window,
                     state=NORMAL,
@@ -78,17 +90,7 @@ text_display = Text(window,
                     bg='#974EC3',
                     wrap=WORD
                     )
-text_display.pack()
-
-# button
-retrieve_display_text_button = ttk.Button(window,
-                                          text='Retrieve Text',
-                                          style="Rounded.TButton",
-                                          command=retrieve_random_text,
-                                          cursor='hand2',
-                                          padding=0,
-                                          )
-retrieve_display_text_button.pack()
+text_display.grid(columnspan=3, row=0)
 
 # text input
 text_input = Text(window, cursor='ibeam',
@@ -104,14 +106,41 @@ text_input = Text(window, cursor='ibeam',
                   bg='white',
                   wrap=WORD
                   )
-text_input.pack()
+text_input.grid(columnspan=3, row=2)
 text_input.focus()
+
+# bindings
+text_input.bind("<Control-v>", no_pasting)  # disable pasting (Ctrl+V)
+
+# ______________ ================================____________
+
+# buttons
+retrieve_display_text_button = ttk.Button(window,
+                                          text='Retrieve Text',
+                                          style="Rounded.TButton",
+                                          command=retrieve_random_text,
+                                          cursor='hand2',
+                                          padding=0,
+                                          )
+retrieve_display_text_button.grid(row=1, column=1)
+
+delete_display_text_button = ttk.Button(window,
+                                        text='Delete Text',
+                                        style="Rounded.TButton",
+                                        command=delete_random_text,
+                                        cursor='hand2',
+                                        padding=0
+
+                                        )
+delete_display_text_button.grid(row=1, column=2)
+
+# ______________ ================================____________
 
 # word count (label)
 word_count = Label(window,
                    text=current_words,
                    )
-word_count.pack()
+word_count.grid(row=3, column=2)
 input_word_count()
 
 window.mainloop()

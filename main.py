@@ -45,7 +45,6 @@ def input_word_count():
 
     # using list comprehension
     clean_list = [item for item in input_text.split(' ') if item.strip() != ""]
-
     current_words = len(clean_list)
     if input_text == "":
         current_words = 0
@@ -59,8 +58,8 @@ def timer():
 
 # styling
 style = ttk.Style()
-style.configure('Rounded.TButton', relief='ridge', borderwidth=0, background='#974EC3')
-style.map('Rounded.TButton', foreground=[('active', 'purple')], background=[('active', '#FF6AC2')])
+style.configure('Rounded.TButton', relief='solid', borderwidth=1, background='#313866')
+style.map('Rounded.TButton', foreground=[('active', '#974EC3')])
 
 # text display
 text_display = Text(window,
@@ -69,9 +68,14 @@ text_display = Text(window,
                     relief='solid',
                     font=14,
                     foreground='white',
+                    pady=20,
+                    padx=20,
+                    height=DISPLAY_HEIGHT,
+                    width=WIDTH,
+                    bg='#974EC3',
+                    wrap=WORD
                     )
 text_display.pack()
-text_display.config(height=DISPLAY_HEIGHT, width=WIDTH, bg='#974EC3', padx=3, pady=3)
 
 # button
 retrieve_display_text_button = ttk.Button(window,
@@ -79,10 +83,9 @@ retrieve_display_text_button = ttk.Button(window,
                                           style="Rounded.TButton",
                                           command=retrieve_random_text,
                                           cursor='hand2',
-
+                                          padding=0,
                                           )
 retrieve_display_text_button.pack()
-retrieve_display_text_button.config()
 
 # text input
 text_input = Text(window, cursor='ibeam',
@@ -90,14 +93,21 @@ text_input = Text(window, cursor='ibeam',
                   insertbackground="#FF6AC2",
                   relief='solid',
                   foreground='black',
-                  font=13
+                  font=14,
+                  pady=20,
+                  padx=20,
+                  height=INPUT_HEIGHT,
+                  width=WIDTH,
+                  bg='white',
+                  wrap=WORD
                   )
 text_input.pack()
-text_input.config(height=INPUT_HEIGHT, width=WIDTH, bg='white')
 text_input.focus()
 
 # word count (label)
-word_count = Label(window, text=current_words)
+word_count = Label(window,
+                   text=current_words,
+                   )
 word_count.pack()
 input_word_count()
 

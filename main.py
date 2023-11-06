@@ -9,6 +9,9 @@ window.config(pady=40, padx=40, bg='#313866')
 window.minsize(width=1020, height=720)
 window.maxsize(width=1920, height=1080)
 
+# app icon
+window.iconbitmap('icon/pleymate.ico', )
+
 # VARIABLES
 WIDTH = 100
 DISPLAY_HEIGHT = 10

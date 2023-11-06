@@ -1,4 +1,4 @@
-# Xexi Type Speed
+# Pleymate Type Speed
 
 NOTE:
 Active development in progress

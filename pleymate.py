@@ -10,7 +10,7 @@ window.minsize(width=1220, height=720)
 window.maxsize(width=1222, height=720)
 window.geometry("700x700")
 # app icon
-window.iconbitmap('icon/pleymate.ico', )
+window.iconbitmap('./pleymate.ico', )
 
 # VARIABLES
 WIDTH = 120

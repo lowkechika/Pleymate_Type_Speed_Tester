@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import time
+
 
 # window
 window = Tk()
@@ -8,12 +8,12 @@ window.title('Pleymate Type Speed')
 window.config(pady=40, padx=40, bg='#313866')
 window.minsize(width=1220, height=720)
 window.maxsize(width=1222, height=720)
-
+window.geometry("700x700")
 # app icon
 window.iconbitmap('icon/pleymate.ico', )
 
 # VARIABLES
-WIDTH = 100
+WIDTH = 120
 DISPLAY_HEIGHT = 10
 INPUT_HEIGHT = 8
 
@@ -30,7 +30,7 @@ def retrieve_random_text():
             "to each other."
 
             "\n\nYour website’s color scheme is crucial to your brand image. It shapes how viewers see your site, "
-            "develops a sense of"
+            "develops a sense of "
             "order and hierarchy, and allows important information stand out. Having a cohesive color scheme also "
             "creates a sense of flow and balance amongst different pages. A harmonious color palette truly does more "
             "than provide aesthetics.")
@@ -54,11 +54,7 @@ current_words = 0
 def input_word_count():
     global current_words
     input_text = text_input.get(1.0, 'end-1c')
-    # print(input_text)
-    # unclean_list = input_text.split(' ')
-
-    # using list comprehension
-    clean_list = [item for item in input_text.split(' ') if item.strip() != ""]
+    clean_list = [item for item in input_text.split(' ') if item.strip() != ""]  # using list comprehension
     current_words = len(clean_list)
     if input_text == "":
         current_words = 0
@@ -66,12 +62,33 @@ def input_word_count():
     window.after(10, input_word_count)
 
 
-def timer():
-    pass
+counter_active = False
+
+
+def check_counter_status():
+    if not counter_active:  # execute only if the counter status is False
+        seconds_counter()  # start counting
+        speed_tracker()  # start tracking the typing speed
+
+
+def seconds_counter():
+    global current_seconds, counter_active
+    counter_active = True
+    counter.config(text=f"Elapsed seconds: {current_seconds}")
+    window.after(1000, seconds_counter)
+    current_seconds += 1
+
+
+def speed_tracker():
+    global current_words, current_seconds, current_speed
+    time_in_minutes = current_seconds / 60
+    current_speed = int(current_words / time_in_minutes)
+    words_per_min.config(text=f"Words/min: {current_speed}")
+    window.after(1, speed_tracker)
 
 
 # styling
-style = ttk.Style()
+style = ttk.Style()  # OPTIONAL
 style.configure('Rounded.TButton', relief='solid', borderwidth=1, background='#313866')
 style.map('Rounded.TButton', foreground=[('active', '#974EC3')])
 
@@ -115,32 +132,53 @@ text_input.bind("<Control-v>", no_pasting)  # disable pasting (Ctrl+V)
 # ______________ ================================____________
 
 # buttons
-retrieve_display_text_button = ttk.Button(window,
-                                          text='Retrieve Text',
-                                          style="Rounded.TButton",
-                                          command=retrieve_random_text,
-                                          cursor='hand2',
-                                          padding=0,
-                                          )
-retrieve_display_text_button.grid(row=1, column=1)
+retrieve_display_text_button = Button(window,
+                                      text='Retrieve Text',
+                                      command=retrieve_random_text,
+                                      cursor='hand2',
+                                      bg="yellow",
+                                      fg="blue",
+                                      width=20
 
-delete_display_text_button = ttk.Button(window,
-                                        text='Delete Text',
-                                        style="Rounded.TButton",
-                                        command=delete_random_text,
-                                        cursor='hand2',
-                                        padding=0
+                                      )
+retrieve_display_text_button.grid(row=1, column=0)
 
-                                        )
+delete_display_text_button = Button(window,
+                                    text='Clear Text',
+                                    command=delete_random_text,
+                                    cursor='hand2',
+                                    bg="red",
+                                    fg="white",
+                                    justify=LEFT,
+                                    width=20
+                                    )
 delete_display_text_button.grid(row=1, column=2)
+
+start_button = Button(window,
+                      text='Start Test',
+                      command=check_counter_status,
+                      cursor='hand2',
+                      bg="green",
+                      fg="white",
+                      width=20
+                      )
+start_button.grid(row=1, column=1)
 
 # ______________ ================================____________
 
 # word count (label)
-word_count = Label(window,
-                   text=current_words,
-                   )
-word_count.grid(row=3, column=2)
+word_count = Label(window, text=current_words, width=20)
+word_count.grid(row=3, column=0)
 input_word_count()
+
+# counter and timer
+current_seconds = 0
+counter = Label(window, text=f"Elapsed seconds: {current_seconds}", width=20)
+counter.grid(row=3, column=1)
+
+# speed label word per minute
+current_speed = 0
+words_per_min = Label(window, text=f"Words/min: {current_speed}", width=20)
+words_per_min.grid(row=3, column=2)
 
 window.mainloop()

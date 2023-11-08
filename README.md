@@ -1,4 +1,4 @@
-# Pleymate Type Speed
+# Pleymate Type Speed Tester
 
 NOTE:
 Active development in progress

@@ -1,6 +1,4 @@
 from tkinter import *
-from tkinter import ttk
-
 
 # window
 window = Tk()
@@ -13,7 +11,7 @@ window.geometry("700x700")
 window.iconbitmap('D:/Dev/Python Dev/My_Speed_Test_App_Version/pleymate.ico', )
 
 # VARIABLES
-WIDTH = 120
+WIDTH = 100
 DISPLAY_HEIGHT = 10
 INPUT_HEIGHT = 8
 
@@ -39,6 +37,7 @@ def retrieve_random_text():
 
 
 # prevent pasting on text input
+# noinspection PyUnusedLocal
 def no_pasting(event):
     return "break"
 
@@ -62,35 +61,85 @@ def input_word_count():
     window.after(10, input_word_count)
 
 
-counter_active = False
+counter_active = True
+task_paused = False
+reset = False
 
 
 def check_counter_status():
-    if not counter_active:  # execute only if the counter status is False
+    global reset, task_paused
+    reset = False
+    task_paused = False
+    if counter_active:  # execute only if the counter status is True
+        start_button.config(text="TASK ACTIVE")
         seconds_counter()  # start counting
         speed_tracker()  # start tracking the typing speed
+    else:
+        track_end_task()
 
 
 def seconds_counter():
-    global current_seconds, counter_active
-    counter_active = True
-    counter.config(text=f"Elapsed seconds: {current_seconds}")
-    window.after(1000, seconds_counter)
-    current_seconds += 1
+    global current_seconds, counter_active, task_paused
+    if counter_active and not reset:
+        start_button.config(state=DISABLED)
+        pause_button.config(state=ACTIVE)
+        counter.config(text=f"Elapsed seconds: {current_seconds}")
+        window.after(1000, seconds_counter)
+        current_seconds += 1
+    elif reset:
+        current_seconds = 0
+        start_button.config(state=ACTIVE, text="START")
+        pause_button.config(state=DISABLED, text="PAUSE TASK")
+        counter.config(text=f"Elapsed seconds: {current_seconds}")
+
+    elif reset and task_paused:
+        current_seconds = 0
+        start_button.config(state=ACTIVE, text="START")
+        pause_button.config(state=DISABLED, text="PAUSE TASK")
+        counter.config(text=f"Elapsed seconds: {current_seconds}")
 
 
 def speed_tracker():
     global current_words, current_seconds, current_speed
     time_in_minutes = current_seconds / 60
-    current_speed = int(current_words / time_in_minutes)
+    try:
+        current_speed = int(current_words / time_in_minutes)
+    except ZeroDivisionError:
+        pass
     words_per_min.config(text=f"Words/min: {current_speed}")
     window.after(1, speed_tracker)
 
 
-# styling
-style = ttk.Style()  # OPTIONAL
-style.configure('Rounded.TButton', relief='solid', borderwidth=1, background='#313866')
-style.map('Rounded.TButton', foreground=[('active', '#974EC3')])
+def track_end_task():
+    global counter_active
+    if not task_paused and not counter_active:
+        counter_active = True
+        pause_button.config(state=ACTIVE, text="PAUSE TASK")
+        start_button.config(state=DISABLED)
+        print('here!')
+        check_counter_status()
+
+
+def pause_task():
+    global counter_active, task_paused
+    start_button.config(state=ACTIVE, text="UNPAUSE")
+    pause_button.config(state=DISABLED, text="TASK PAUSED")
+    counter_active = False
+    task_paused = True
+
+
+def reset_task():
+    global current_seconds, current_speed, reset
+    reset = True
+    current_speed = 0
+    text_input.delete(0.0, END)
+    check_pause_status()
+
+
+def check_pause_status():
+    if task_paused:
+        seconds_counter()
+
 
 # ______________ ================================____________
 # text display
@@ -105,7 +154,7 @@ text_display = Text(window,
                     height=DISPLAY_HEIGHT,
                     width=WIDTH,
                     bg='#974EC3',
-                    wrap=WORD
+                    wrap=WORD,
                     )
 text_display.grid(columnspan=3, row=0)
 
@@ -133,52 +182,82 @@ text_input.bind("<Control-v>", no_pasting)  # disable pasting (Ctrl+V)
 
 # buttons
 retrieve_display_text_button = Button(window,
-                                      text='Retrieve Text',
+                                      text='RETRIEVE TEXT',
                                       command=retrieve_random_text,
                                       cursor='hand2',
                                       bg="yellow",
                                       fg="blue",
-                                      width=20
+                                      width=20,
+                                      font="Harvetica"
 
                                       )
 retrieve_display_text_button.grid(row=1, column=0)
 
 delete_display_text_button = Button(window,
-                                    text='Clear Text',
+                                    text='CLEAR TEXT',
                                     command=delete_random_text,
                                     cursor='hand2',
                                     bg="red",
                                     fg="white",
                                     justify=LEFT,
-                                    width=20
+                                    width=20,
+                                    font="Harvetica"
                                     )
 delete_display_text_button.grid(row=1, column=2)
 
 start_button = Button(window,
-                      text='Start Test',
+                      text='START',
                       command=check_counter_status,
                       cursor='hand2',
                       bg="green",
                       fg="white",
-                      width=20
+                      width=20,
+                      font="Harvetica"
                       )
 start_button.grid(row=1, column=1)
 
+pause_button = Button(window,
+                      text="PAUSE TASK",
+                      command=pause_task,
+                      bg="#974EC3",
+                      width=20,
+                      font="Harvetica",
+                      relief="flat",
+                      state=DISABLED,
+                      fg="white")
+pause_button.grid(row=5, column=1)
+
+reset_button = Button(window,
+                      text="RESET",
+                      command=reset_task,
+                      bg="red",
+                      width=20,
+                      font="Harvetica",
+                      relief="flat",
+                      fg="white"
+                      )
+reset_button.grid(row=5, column=2)
+
 # ______________ ================================____________
 
-# word count (label)
-word_count = Label(window, text=current_words, width=20)
+# word count (labels)
+word_count = Label(window, text=current_words, width=20, font="Harvetica")
 word_count.grid(row=3, column=0)
 input_word_count()
 
 # counter and timer
 current_seconds = 0
-counter = Label(window, text=f"Elapsed seconds: {current_seconds}", width=20)
+counter = Label(window, text=f"Elapsed seconds: {current_seconds}", width=20, font="Harvetica")
 counter.grid(row=3, column=1)
 
 # speed label word per minute
 current_speed = 0
-words_per_min = Label(window, text=f"Words/min: {current_speed}", width=20)
+words_per_min = Label(window, text=f"Words/min: {current_speed}", width=20, font="Harvetica")
 words_per_min.grid(row=3, column=2)
 
+spliter = Label(window, height=2, bg='#313866')
+spliter.grid(row=4, columnspan=3, column=0)
+
 window.mainloop()
+
+# by Pleymate (Hal)
